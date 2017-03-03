@@ -60,7 +60,7 @@ pub struct Frame {
 pub struct FrameHeader {
     pub frame_type_id: u8,
     pub channel: u16,
-    pub payload_size: u32
+    pub payload_size: u32,
 }
 
 impl FrameHeader {
@@ -69,7 +69,11 @@ impl FrameHeader {
         let frame_type_id = reader.read_u8().unwrap();
         let channel = reader.read_u16::<BigEndian>().unwrap();
         let payload_size = reader.read_u32::<BigEndian>().unwrap();
-        FrameHeader { frame_type_id: frame_type_id, channel: channel, payload_size: payload_size }
+        FrameHeader {
+            frame_type_id: frame_type_id,
+            channel: channel,
+            payload_size: payload_size,
+        }
     }
 }
 
@@ -78,7 +82,7 @@ impl FrameHeader {
 pub struct MethodFrame {
     pub class_id: u16,
     pub method_id: u16,
-    pub arguments: EncodedMethod
+    pub arguments: EncodedMethod,
 }
 
 impl MethodFrame {
@@ -93,14 +97,18 @@ impl MethodFrame {
     // We need this method, so we can match on class_id & method_id
     pub fn decode(frame: &Frame) -> Result<MethodFrame> {
         if frame.frame_type != FrameType::METHOD {
-            return Err(ErrorKind::Protocol("Not a method frame".to_string()).into())
+            return Err(ErrorKind::Protocol("Not a method frame".to_string()).into());
         }
         let reader = &mut frame.payload.inner();
         let class_id = try!(reader.read_u16::<BigEndian>());
         let method_id = try!(reader.read_u16::<BigEndian>());
         let mut arguments = vec![];
         try!(reader.read_to_end(&mut arguments));
-        Ok(MethodFrame { class_id: class_id, method_id: method_id, arguments: EncodedMethod::new(arguments) })
+        Ok(MethodFrame {
+            class_id: class_id,
+            method_id: method_id,
+            arguments: EncodedMethod::new(arguments),
+        })
     }
 
     pub fn method_name(&self) -> &'static str {
@@ -181,7 +189,7 @@ impl ContentHeaderFrame {
     }
 
     pub fn encode(&self) -> Result<Vec<u8>> {
-        let mut writer = Vec::with_capacity(self.properties.inner().len() + 14);;
+        let mut writer = Vec::with_capacity(self.properties.inner().len() + 14);
         try!(writer.write_u16::<BigEndian>(self.content_class));
         try!(writer.write_u16::<BigEndian>(self.weight)); //0 all the time for now
         try!(writer.write_u64::<BigEndian>(self.body_size));

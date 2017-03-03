@@ -36,20 +36,24 @@
 
 extern crate byteorder;
 extern crate bit_vec;
-#[macro_use] extern crate error_chain;
-#[macro_use] extern crate log;
-#[macro_use] extern crate enum_primitive;
+#[macro_use]
+extern crate error_chain;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate enum_primitive;
 
 mod framing;
 mod table;
 mod method;
-#[macro_use] mod codegen_macros;
+#[macro_use]
+mod codegen_macros;
 mod error;
 
 pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 pub mod protocol;
 
 pub use table::{Table, TableEntry};
-pub use method::{Method, };
+pub use method::Method;
 pub use framing::*;
 pub use error::*;

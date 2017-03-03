@@ -37,7 +37,9 @@ impl Init for Table {
     }
 }
 
-fn read_table_entry<T>(reader: &mut T) -> Result<(TableEntry, usize)> where T: Read {
+fn read_table_entry<T>(reader: &mut T) -> Result<(TableEntry, usize)>
+    where T: Read
+{
     let (entry, entry_size) = match try!(reader.read_u8()) {
         b't' => (TableEntry::Bool(!try!(reader.read_u8()) != 0), 1),
         b'b' => (TableEntry::ShortShortInt(try!(reader.read_i8())), 1),
@@ -50,9 +52,13 @@ fn read_table_entry<T>(reader: &mut T) -> Result<(TableEntry, usize)> where T: R
         b'l' => (TableEntry::LongLongUint(try!(reader.read_u64::<BigEndian>())), 8),
         b'f' => (TableEntry::Float(try!(reader.read_f32::<BigEndian>())), 4),
         b'd' => (TableEntry::Double(try!(reader.read_f64::<BigEndian>())), 8),
-        b'D' => ({
-            TableEntry::DecimalValue(try!(reader.read_u8()), try!(reader.read_u32::<BigEndian>()))
-        }, 5),
+        b'D' => {
+            ({
+                 TableEntry::DecimalValue(try!(reader.read_u8()),
+                                          try!(reader.read_u32::<BigEndian>()))
+             },
+             5)
+        }
         // b's' => {
         //  let size = try!(reader.read_u8()) as usize;
         // let str =
@@ -66,7 +72,7 @@ fn read_table_entry<T>(reader: &mut T) -> Result<(TableEntry, usize)> where T: R
             let string = String::from_utf8_lossy(&buffer).to_string();
             let entry = TableEntry::LongString(string);
             (entry, 4 + size)
-        },
+        }
         b'A' => {
             let array_len = try!(reader.read_u32::<BigEndian>()) as usize;
             let mut read_len = 0;
@@ -78,13 +84,13 @@ fn read_table_entry<T>(reader: &mut T) -> Result<(TableEntry, usize)> where T: R
             }
             let entry = TableEntry::FieldArray(arr);
             (entry, 4 + array_len)
-        },
+        }
         b'T' => (TableEntry::Timestamp(try!(reader.read_u64::<BigEndian>())), 8),
         b'F' => {
             let (table, table_size) = try!(decode_table(reader));
             let entry = TableEntry::FieldTable(table);
             (entry, table_size)
-        },
+        }
         b'V' => (TableEntry::Void, 0),
         x => {
             debug!("Unknown type: {}", x);
@@ -177,7 +183,9 @@ fn write_table_entry(writer: &mut Vec<u8>, table_entry: &TableEntry) -> Result<(
     Ok(())
 }
 
-pub fn decode_table<T>(reader: &mut T) -> Result<(Table, usize)> where T: Read {
+pub fn decode_table<T>(reader: &mut T) -> Result<(Table, usize)>
+    where T: Read
+{
     let mut table = Table::new();
     let table_len = try!(reader.read_u32::<BigEndian>()) as usize;
     debug!("decoding table, len: {}", table_len);
@@ -189,12 +197,17 @@ pub fn decode_table<T>(reader: &mut T) -> Result<(Table, usize)> where T: Read {
         try!(reader.read(&mut field_name[..]));
         let (table_entry, table_entry_size) = try!(read_table_entry(reader));
         let stringified_field_name = String::from_utf8_lossy(&field_name).to_string();
-        debug!("Read table entry: {:?}:{} = {:?}", stringified_field_name, table_entry_size, table_entry);
+        debug!("Read table entry: {:?}:{} = {:?}",
+               stringified_field_name,
+               table_entry_size,
+               table_entry);
         table.insert(stringified_field_name, table_entry);
         bytes_read += 1 + field_name_len + table_entry_size; // a byte for length of the field_name
         debug!("bytes_read: {} of {}", bytes_read, table_len);
     }
-    debug!("table decoded, table len: {}, bytes_read: {}", table_len, bytes_read);
+    debug!("table decoded, table len: {}, bytes_read: {}",
+           table_len,
+           bytes_read);
     Ok((table, bytes_read + 4)) // 4 bytes for the table_len
 }
 

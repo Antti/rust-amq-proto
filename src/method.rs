@@ -26,7 +26,11 @@ pub trait Method {
     fn class_id(&self) -> u16;
 
     fn encode_method_frame(&self) -> Result<FramePayload> {
-        let frame = MethodFrame { class_id: self.class_id(), method_id: self.id(), arguments: self.encode()? };
+        let frame = MethodFrame {
+            class_id: self.class_id(),
+            method_id: self.id(),
+            arguments: self.encode()?,
+        };
         frame.encode()
     }
 

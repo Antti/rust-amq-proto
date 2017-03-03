@@ -10,30 +10,35 @@ pub struct ArgumentsReader<'data> {
     cursor: Cursor<&'data [u8]>,
     bits: BitVec,
     byte: u8,
-    current_bit: u8
+    current_bit: u8,
 }
 
-impl <'data> ArgumentsReader<'data> {
+impl<'data> ArgumentsReader<'data> {
     pub fn new(data: &'data [u8]) -> ArgumentsReader {
-        ArgumentsReader { cursor: Cursor::new(data), bits: BitVec::from_bytes(&[0]), byte: 0, current_bit: 0 }
+        ArgumentsReader {
+            cursor: Cursor::new(data),
+            bits: BitVec::from_bytes(&[0]),
+            byte: 0,
+            current_bit: 0,
+        }
     }
 
-    pub fn read_octet(&mut self) -> Result<u8>  {
+    pub fn read_octet(&mut self) -> Result<u8> {
         self.current_bit = 0;
         self.cursor.read_u8().map_err(From::from)
     }
 
-    pub fn read_long(&mut self) -> Result<u32>  {
+    pub fn read_long(&mut self) -> Result<u32> {
         self.current_bit = 0;
         self.cursor.read_u32::<BigEndian>().map_err(From::from)
     }
 
-    pub fn read_longlong(&mut self) -> Result<u64>  {
+    pub fn read_longlong(&mut self) -> Result<u64> {
         self.current_bit = 0;
         self.cursor.read_u64::<BigEndian>().map_err(From::from)
     }
 
-    pub fn read_short(&mut self) -> Result<u16>  {
+    pub fn read_short(&mut self) -> Result<u16> {
         self.current_bit = 0;
         self.cursor.read_u16::<BigEndian>().map_err(From::from)
     }
@@ -59,7 +64,7 @@ impl <'data> ArgumentsReader<'data> {
         decode_table(&mut self.cursor).map(|(table, table_size)| table)
     }
 
-    pub fn read_timestamp(&mut self) -> Result<u64>  {
+    pub fn read_timestamp(&mut self) -> Result<u64> {
         self.current_bit = 0;
         self.read_longlong()
     }
@@ -72,7 +77,9 @@ impl <'data> ArgumentsReader<'data> {
             self.bits = BitVec::from_bytes(&[self.byte]);
         }
         self.current_bit += 1;
-        self.bits.get(7 - (self.current_bit - 1) as usize).ok_or(ErrorKind::Protocol("Bitmap is not correct".to_owned()).into())
+        self.bits
+            .get(7 - (self.current_bit - 1) as usize)
+            .ok_or(ErrorKind::Protocol("Bitmap is not correct".to_owned()).into())
     }
 }
 
@@ -80,30 +87,34 @@ impl <'data> ArgumentsReader<'data> {
 pub struct ArgumentsWriter {
     data: Vec<u8>,
     bits: BitVec,
-    current_bit: u8
+    current_bit: u8,
 }
 
 impl ArgumentsWriter {
     pub fn new() -> Self {
-        ArgumentsWriter { data: vec![], bits: BitVec::from_bytes(&[0]), current_bit: 0 }
+        ArgumentsWriter {
+            data: vec![],
+            bits: BitVec::from_bytes(&[0]),
+            current_bit: 0,
+        }
     }
 
-    pub fn write_octet(&mut self, data: &u8) -> Result<()>  {
+    pub fn write_octet(&mut self, data: &u8) -> Result<()> {
         self.flush_bits()?;
         self.data.write_u8(*data).map_err(From::from)
     }
 
-    pub fn write_long(&mut self, data: &u32) -> Result<()>  {
+    pub fn write_long(&mut self, data: &u32) -> Result<()> {
         self.flush_bits()?;
         self.data.write_u32::<BigEndian>(*data).map_err(From::from)
     }
 
-    pub fn write_longlong(&mut self, data: &u64) -> Result<()>  {
+    pub fn write_longlong(&mut self, data: &u64) -> Result<()> {
         self.flush_bits()?;
         self.data.write_u64::<BigEndian>(*data).map_err(From::from)
     }
 
-    pub fn write_short(&mut self, data: &u16) -> Result<()>  {
+    pub fn write_short(&mut self, data: &u16) -> Result<()> {
         self.flush_bits()?;
         self.data.write_u16::<BigEndian>(*data).map_err(From::from)
     }
@@ -125,10 +136,10 @@ impl ArgumentsWriter {
     // Always a last method, since it writes to the end
     pub fn write_table(&mut self, data: &Table) -> Result<()> {
         self.flush_bits()?;
-        encode_table(&mut self.data,&data)
+        encode_table(&mut self.data, &data)
     }
 
-    pub fn write_timestamp(&mut self, data: &u64) -> Result<()>  {
+    pub fn write_timestamp(&mut self, data: &u64) -> Result<()> {
         self.flush_bits()?;
         self.write_longlong(data)
     }
@@ -325,9 +336,17 @@ mod test {
     properties_struct!(Test, a => octet, b => shortstr, c => longstr, d => bit, e => bit, f => long);
 
     #[test]
-    fn test_encoding(){
-        let f = Foo { a: 1, b: "test".to_string(), c: "bar".to_string(), d: false, e: true, f: 0xDEADBEEF };
-        assert_eq!(f.encode().unwrap().into_inner(), vec![
+    fn test_encoding() {
+        let f = Foo {
+            a: 1,
+            b: "test".to_string(),
+            c: "bar".to_string(),
+            d: false,
+            e: true,
+            f: 0xDEADBEEF,
+        };
+        assert_eq!(f.encode().unwrap().into_inner(),
+                   vec![
             1, // 1
             4, // "test".len()
             116, 101, 115, 116, // "test"
@@ -339,9 +358,19 @@ mod test {
     }
 
     #[test]
-    fn test_decoding(){
-        let f = Foo { a: 1, b: "test".to_string(), c: "bar".to_string(), d: false, e: true, f: 0xDEADBEEF };
-        let frame = MethodFrame { class_id: 1, method_id: 2, arguments: EncodedMethod::new(vec![
+    fn test_decoding() {
+        let f = Foo {
+            a: 1,
+            b: "test".to_string(),
+            c: "bar".to_string(),
+            d: false,
+            e: true,
+            f: 0xDEADBEEF,
+        };
+        let frame = MethodFrame {
+            class_id: 1,
+            method_id: 2,
+            arguments: EncodedMethod::new(vec![
             1, // 1
             4, // "test".len()
             116, 101, 115, 116, // "test"
@@ -349,14 +378,25 @@ mod test {
             98, 97, 114, // "bar"
             2, // false, true => 0b00000010
             0xDE, 0xAD, 0xBE, 0xEF, // 0xDEADBEEF
-        ]) };
+        ]),
+        };
         assert_eq!(Foo::decode(frame).unwrap(), f);
     }
 
     #[test]
-    fn test_decoding_wrong_ids(){
-        let f = Foo { a: 1, b: "test".to_string(), c: "bar".to_string(), d: false, e: true, f: 0xDEADBEEF };
-        let frame = MethodFrame { class_id: 42, method_id: 55, arguments: EncodedMethod::new(vec![
+    fn test_decoding_wrong_ids() {
+        let f = Foo {
+            a: 1,
+            b: "test".to_string(),
+            c: "bar".to_string(),
+            d: false,
+            e: true,
+            f: 0xDEADBEEF,
+        };
+        let frame = MethodFrame {
+            class_id: 42,
+            method_id: 55,
+            arguments: EncodedMethod::new(vec![
             1, // 1
             4, // "test".len()
             116, 101, 115, 116, // "test"
@@ -364,7 +404,8 @@ mod test {
             98, 97, 114, // "bar"
             2, // false, true => 0b00000010
             0xDE, 0xAD, 0xBE, 0xEF, // 0xDEADBEEF
-        ]) };
+        ]),
+        };
         assert_eq!(Foo::decode(frame).is_err(), true);
     }
 }

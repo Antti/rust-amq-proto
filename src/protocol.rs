@@ -87,7 +87,7 @@ method_id => short
     unsafe impl Send for Close {}
     // Method 51:close-ok
     method_struct!(CloseOk, "connection.close-ok", 10, 51,
-        
+
     );
 
     unsafe impl Send for CloseOk {}
@@ -99,7 +99,7 @@ method_id => short
     unsafe impl Send for Blocked {}
     // Method 61:unblocked
     method_struct!(Unblocked, "connection.unblocked", 10, 61,
-        
+
     );
 
     unsafe impl Send for Unblocked {}
@@ -153,7 +153,7 @@ method_id => short
     unsafe impl Send for Close {}
     // Method 41:close-ok
     method_struct!(CloseOk, "channel.close-ok", 20, 41,
-        
+
     );
 
     unsafe impl Send for CloseOk {}
@@ -220,7 +220,7 @@ arguments => table
     unsafe impl Send for Declare {}
     // Method 11:declare-ok
     method_struct!(DeclareOk, "exchange.declare-ok", 40, 11,
-        
+
     );
 
     unsafe impl Send for DeclareOk {}
@@ -235,7 +235,7 @@ nowait => bit
     unsafe impl Send for Delete {}
     // Method 21:delete-ok
     method_struct!(DeleteOk, "exchange.delete-ok", 40, 21,
-        
+
     );
 
     unsafe impl Send for DeleteOk {}
@@ -252,7 +252,7 @@ arguments => table
     unsafe impl Send for Bind {}
     // Method 31:bind-ok
     method_struct!(BindOk, "exchange.bind-ok", 40, 31,
-        
+
     );
 
     unsafe impl Send for BindOk {}
@@ -269,7 +269,7 @@ arguments => table
     unsafe impl Send for Unbind {}
     // Method 51:unbind-ok
     method_struct!(UnbindOk, "exchange.unbind-ok", 40, 51,
-        
+
     );
 
     unsafe impl Send for UnbindOk {}
@@ -322,7 +322,7 @@ arguments => table
     unsafe impl Send for Bind {}
     // Method 21:bind-ok
     method_struct!(BindOk, "queue.bind-ok", 50, 21,
-        
+
     );
 
     unsafe impl Send for BindOk {}
@@ -368,7 +368,7 @@ arguments => table
     unsafe impl Send for Unbind {}
     // Method 51:unbind-ok
     method_struct!(UnbindOk, "queue.unbind-ok", 50, 51,
-        
+
     );
 
     unsafe impl Send for UnbindOk {}
@@ -414,7 +414,7 @@ global => bit
     unsafe impl Send for Qos {}
     // Method 11:qos-ok
     method_struct!(QosOk, "basic.qos-ok", 60, 11,
-        
+
     );
 
     unsafe impl Send for QosOk {}
@@ -531,7 +531,7 @@ requeue => bit
     unsafe impl Send for Recover {}
     // Method 111:recover-ok
     method_struct!(RecoverOk, "basic.recover-ok", 60, 111,
-        
+
     );
 
     unsafe impl Send for RecoverOk {}
@@ -560,37 +560,37 @@ pub mod tx {
 
     // Method 10:select
     method_struct!(Select, "tx.select", 90, 10,
-        
+
     );
 
     unsafe impl Send for Select {}
     // Method 11:select-ok
     method_struct!(SelectOk, "tx.select-ok", 90, 11,
-        
+
     );
 
     unsafe impl Send for SelectOk {}
     // Method 20:commit
     method_struct!(Commit, "tx.commit", 90, 20,
-        
+
     );
 
     unsafe impl Send for Commit {}
     // Method 21:commit-ok
     method_struct!(CommitOk, "tx.commit-ok", 90, 21,
-        
+
     );
 
     unsafe impl Send for CommitOk {}
     // Method 30:rollback
     method_struct!(Rollback, "tx.rollback", 90, 30,
-        
+
     );
 
     unsafe impl Send for Rollback {}
     // Method 31:rollback-ok
     method_struct!(RollbackOk, "tx.rollback-ok", 90, 31,
-        
+
     );
 
     unsafe impl Send for RollbackOk {}
@@ -617,7 +617,7 @@ pub mod confirm {
     unsafe impl Send for Select {}
     // Method 11:select-ok
     method_struct!(SelectOk, "confirm.select-ok", 85, 11,
-        
+
     );
 
     unsafe impl Send for SelectOk {}
