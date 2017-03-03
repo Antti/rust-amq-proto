@@ -54,6 +54,6 @@ pub const VERSION: &'static str = env!("CARGO_PKG_VERSION");
 pub mod protocol;
 
 pub use table::{Table, TableEntry};
-pub use method::Method;
+pub use method::{Method, EncodedMethod};
 pub use framing::*;
 pub use error::*;
