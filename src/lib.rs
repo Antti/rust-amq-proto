@@ -1,6 +1,6 @@
 //! #rust-amqp
-//! [![Build Status](https://travis-ci.org/Antti/rust-amqp.svg)](https:
-//! //travis-ci.org/Antti/rust-amqp)
+//! [![Build Status](https://travis-ci.org/Antti/rust-amq-proto.svg)](https:
+//! //travis-ci.org/Antti/rust-amq-proto)
 //!
 //! AMQ protocol implementation in pure rust.
 //!

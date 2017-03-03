@@ -1,9 +1,9 @@
 [package]
-name = "amq-protocol"
+name = "amq-proto"
 version = "0.1.0"
 authors = ["Andrii Dmytrenko <refresh.xss@gmail.com>"]
 description = "AMQP/RabbitMQ protocol implementation"
-repository = "https://github.com/Antti/rust-amq-protocol"
+repository = "https://github.com/Antti/rust-amq-proto"
 license = "MIT/Apache-2.0"
 keywords = ["amqp", "rabbitmq", "queue"]
 readme = "Readme.md"
