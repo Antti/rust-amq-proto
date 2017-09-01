@@ -22,13 +22,13 @@ pub trait Method {
     fn decode(method_frame: MethodFrame) -> Result<Self> where Self: Sized;
     fn encode(&self) -> Result<EncodedMethod>;
     fn name(&self) -> &'static str;
-    fn id(&self) -> u16;
-    fn class_id(&self) -> u16;
+    const ID: u16;
+    const CLASS_ID: u16;
 
     fn encode_method_frame(&self) -> Result<FramePayload> {
         let frame = MethodFrame {
-            class_id: self.class_id(),
-            method_id: self.id(),
+            class_id: Self::CLASS_ID,
+            method_id: Self::ID,
             arguments: self.encode()?,
         };
         frame.encode()

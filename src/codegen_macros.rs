@@ -69,7 +69,6 @@ impl<'data> ArgumentsReader<'data> {
         self.read_longlong()
     }
 
-    // TODO: Reset current_bit on all subsequent other type of data reads
     pub fn read_bit(&mut self) -> Result<bool> {
         if self.current_bit == 0 || self.current_bit == 8 {
             self.current_bit = 0;
@@ -213,6 +212,9 @@ macro_rules! method_struct {
         #[derive(Debug, PartialEq, Clone)]
         pub struct $method_name;
         impl method::Method for $method_name {
+            const ID: u16 = $method_id;
+            const CLASS_ID: u16 = $class_id;
+
             fn decode(_method_frame: MethodFrame) -> Result<Self> where Self: Sized {
                 Ok($method_name)
             }
@@ -224,14 +226,6 @@ macro_rules! method_struct {
             fn name(&self) -> &'static str {
                 $method_str
             }
-
-            fn id(&self) -> u16 {
-                $method_id
-            }
-
-            fn class_id(&self) -> u16 {
-                $class_id
-            }
         }
     );
     ($method_name:ident, $method_str:expr, $class_id:expr, $method_id:expr, $($arg_name:ident => $ty:ident),+) => (
@@ -241,6 +235,9 @@ macro_rules! method_struct {
         }
 
         impl method::Method for $method_name {
+            const ID: u16 = $method_id;
+            const CLASS_ID: u16 = $class_id;
+
             fn decode(method_frame: MethodFrame) -> Result<Self> where Self: Sized {
                 debug!("Decoding {}", $method_str);
                 match (method_frame.class_id, method_frame.method_id) {
@@ -262,14 +259,6 @@ macro_rules! method_struct {
 
             fn name(&self) -> &'static str {
                 $method_str
-            }
-
-            fn id(&self) -> u16 {
-                $method_id
-            }
-
-            fn class_id(&self) -> u16 {
-                $class_id
             }
         }
     )
